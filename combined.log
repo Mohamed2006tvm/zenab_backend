@@ -1,0 +1,8 @@
+{"level":"info","message":"🔌 Power BI push: ⚠️  Not configured","timestamp":"2026-03-13T12:02:04.642Z"}
+{"level":"info","message":"🚀 Server running on http://localhost:5000 in development mode","timestamp":"2026-03-13T12:02:04.645Z"}
+{"level":"info","message":"✅ MongoDB Connected: ac-8dpiuto-shard-00-00.mgvjdof.mongodb.net","timestamp":"2026-03-13T12:02:05.827Z"}
+{"level":"info","message":"::1 - - [13/Mar/2026:12:02:19 +0000] \"GET /api/status HTTP/1.1\" 503 144 \"-\" \"curl/8.5.0\"","timestamp":"2026-03-13T12:02:19.266Z"}
+{"level":"info","message":"🔌 Power BI push: ⚠️  Not configured","timestamp":"2026-03-13T12:02:46.258Z"}
+{"level":"info","message":"🚀 Server running on http://localhost:5000 in development mode","timestamp":"2026-03-13T12:02:46.261Z"}
+{"level":"info","message":"✅ MongoDB Connected: ac-8dpiuto-shard-00-02.mgvjdof.mongodb.net","timestamp":"2026-03-13T12:02:47.334Z"}
+{"level":"info","message":"::1 - - [13/Mar/2026:12:03:13 +0000] \"GET /api/status HTTP/1.1\" 503 144 \"-\" \"curl/8.5.0\"","timestamp":"2026-03-13T12:03:13.679Z"}
