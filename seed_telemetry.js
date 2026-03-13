@@ -1,0 +1,91 @@
+const mongoose = require('mongoose');
+require('dotenv').config();
+const Telemetry = require('./models/Telemetry');
+
+const sampleData = [
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:02:08.887797", aqi: 22, pm25: 15.64, temperature: 24.27, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:03:59.860096", aqi: 18, pm25: 9.32, temperature: 24.13, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:04:04.379114", aqi: 11, pm25: 9.53, temperature: 25.57, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:04:09.421994", aqi: 16, pm25: 9.98, temperature: 25.23, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:04:14.383619", aqi: 23, pm25: 12.42, temperature: 24.76, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:04:19.392334", aqi: 22, pm25: 12.57, temperature: 25.57, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:04:24.371349", aqi: 21, pm25: 13.12, temperature: 24.23, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:04:29.386041", aqi: 15, pm25: 13.14, temperature: 24.16, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:04:34.419067", aqi: 18, pm25: 14.8, temperature: 24.36, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:04:39.858562", aqi: 21, pm25: 11.95, temperature: 24.36, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:04:44.891627", aqi: 15, pm25: 10.89, temperature: 25.36, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:04:49.857171", aqi: 13, pm25: 8.58, temperature: 24.11, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:04:54.857102", aqi: 19, pm25: 9.76, temperature: 24.46, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:04:59.858173", aqi: 15, pm25: 11.82, temperature: 24.7, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:05:04.861423", aqi: 13, pm25: 9.56, temperature: 25.41, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:05:09.845617", aqi: 22, pm25: 14.99, temperature: 25.11, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:05:14.861401", aqi: 22, pm25: 14.92, temperature: 25.16, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:05:19.848913", aqi: 17, pm25: 12.54, temperature: 24.51, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:05:24.930520", aqi: 16, pm25: 14.07, temperature: 24.33, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:05:29.851718", aqi: 23, pm25: 14.66, temperature: 24.91, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:05:34.855627", aqi: 26, pm25: 14.89, temperature: 24.69, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:07:07.899887", aqi: 30, pm25: 18.84, temperature: 25.91, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:07:08.881706", aqi: 20, pm25: 14.7, temperature: 25.89, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:12:08.909723", aqi: 23, pm25: 15.82, temperature: 24.39, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:17:08.975934", aqi: 25, pm25: 18.05, temperature: 25.85, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:18:16.801485", aqi: 28, pm25: 19.75, temperature: 25.69, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:18:21.828016", aqi: 29, pm25: 21.94, temperature: 25.53, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:18:26.832872", aqi: 32, pm25: 23.83, temperature: 24.4, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:18:31.781348", aqi: 38, pm25: 24.52, temperature: 24.61, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:18:36.799617", aqi: 32, pm25: 21.81, temperature: 25.59, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:18:41.850674", aqi: 18, pm25: 12.97, temperature: 24.98, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:18:46.853890", aqi: 19, pm25: 14.02, temperature: 25.47, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:18:51.849519", aqi: 25, pm25: 16.98, temperature: 24.4, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:18:56.856844", aqi: 9, pm25: 9.17, temperature: 25.09, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:19:01.838028", aqi: 28, pm25: 16.66, temperature: 25.91, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:19:06.863997", aqi: 25, pm25: 16.26, temperature: 24.22, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:19:11.843752", aqi: 28, pm25: 20.85, temperature: 24.94, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:19:16.849025", aqi: 28, pm25: 19.35, temperature: 25.18, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:19:21.850483", aqi: 29, pm25: 22.05, temperature: 25.09, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:19:26.846066", aqi: 22, pm25: 14.63, temperature: 24.4, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:19:31.838049", aqi: 23, pm25: 13.66, temperature: 25.96, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:19:36.841322", aqi: 19, pm25: 15.21, temperature: 24.14, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:22:08.942660", aqi: 28, pm25: 18.81, temperature: 25.14, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:24:08.917466", aqi: 31, pm25: 17.46, temperature: 24.12, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:27:08.879198", aqi: 21, pm25: 17.31, temperature: 25.4, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:29:08.976060", aqi: 28, pm25: 17.64, temperature: 24.45, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:34:08.907492", aqi: 22, pm25: 16.52, temperature: 25.6, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:39:08.937582", aqi: 25, pm25: 17.8, temperature: 24.4, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" },
+  { device_id: "ZENAB_TREE_01", timestamp: "2026-03-11T23:44:08.904267", aqi: 27, pm25: 16.38, temperature: 25.74, humidity: 50, oxygen: 21, latitude: 12.9716, longitude: 77.5946, power: "solar", status: "idle" }
+];
+
+async function seedTelemetry() {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log('✅ Connected to MongoDB');
+    
+    // Clear existing telemetry for this device to avoid duplicates during testing
+    await Telemetry.deleteMany({ deviceId: 'ZENAB_TREE_01' });
+    
+    const formattedData = sampleData.map(item => ({
+      deviceId: item.device_id,
+      timestamp: new Date(item.timestamp),
+      aqi: item.aqi,
+      pm25: item.pm25,
+      temperature: item.temperature,
+      humidity: item.humidity,
+      oxygen: item.oxygen,
+      location: {
+        lat: item.latitude,
+        lng: item.longitude
+      },
+      power: item.power,
+      status: item.status
+    }));
+
+    await Telemetry.insertMany(formattedData);
+    console.log(`✅ Seeded ${formattedData.length} hardware telemetry records`);
+    
+    process.exit(0);
+  } catch (err) {
+    console.error('❌ Seeding failed:', err.message);
+    process.exit(1);
+  }
+}
+
+seedTelemetry();
