@@ -7,6 +7,8 @@ const Measurement = require('../models/Measurement');
 const { protect } = require('../middleware/authMiddleware');
 
 const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:8000';
+console.log(`🔌 ML Service configured at: ${ML_SERVICE_URL}`);
+
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
 // Apply protection to all measurement routes
@@ -76,18 +78,26 @@ router.post('/analyze', upload.single('image'), async (req, res) => {
 
     res.json({ ...data, id: measurement._id, savedAt: measurement.created_at });
   } catch (err) {
-    console.error('❌ Analysis Error:', err.message);
+    console.error('❌ Analysis Error:', {
+      message: err.message,
+      code: err.code,
+      stack: err.stack,
+      response: err.response?.data
+    });
+    
     if (err.code === 'ECONNREFUSED' || err.code === 'ENOTFOUND') {
       return res.status(503).json({ 
-        error: 'ML service is unreachable. Ensure ML_SERVICE_URL is set correctly in Render environment variables.' 
+        error: `ML service unreachable at ${ML_SERVICE_URL}. Please check your Render environment variables.` 
       });
     }
+    
     if (err.response) {
       return res.status(err.response.status).json({ 
-        error: `ML service error: ${err.response.data?.error || err.message}` 
+        error: `ML service returned ${err.response.status}: ${JSON.stringify(err.response.data)}` 
       });
     }
-    res.status(500).json({ error: err.message });
+    
+    res.status(500).json({ error: `Backend error: ${err.message}` });
   }
 });
 
