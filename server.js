@@ -47,11 +47,7 @@ const allowedOrigins = [
 ];
 app.use(
   cors({
-    origin: (origin, cb) => {
-      // allow requests with no origin (e.g. curl, mobile apps)
-      if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-      cb(new Error(`CORS: origin '${origin}' not allowed`));
-    },
+    origin: true, // Allow any origin temporarily
     credentials: true,
   })
 );
@@ -66,9 +62,15 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
+const path = require('path');
+
 // ─── Body Parser ──────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// ─── Static Files (Frontend Build) ───────────────────────────────────────────
+const frontendDist = path.join(__dirname, '../Zenab_Frontend/dist');
+app.use(express.static(frontendDist));
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
 app.use('/api/stations', require('./routes/stations'));
@@ -79,7 +81,7 @@ app.use('/api/measure', require('./routes/measure'));
 app.use('/api/telemetry', require('./routes/telemetry'));
 app.use('/api/status', require('./routes/status'));
 
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
   res.json({ message: 'Zenab API (MongoDB) is running', version: '1.0.0' });
 });
 
@@ -120,6 +122,15 @@ app.post('/api/powerbi/push', async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+});
+
+// ─── Catch-all for Frontend (SPA) ─────────────────────────────────────────────
+app.get(/.*/, (req, res, next) => {
+    // If it's an API route that wasn't matched, let it fall through to 404
+    if (req.path.startsWith('/api')) {
+        return next();
+    }
+    res.sendFile(path.join(frontendDist, 'index.html'));
 });
 
 // ─── Global Error Handler ─────────────────────────────────────────────────────
