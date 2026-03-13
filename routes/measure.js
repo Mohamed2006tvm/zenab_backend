@@ -76,8 +76,16 @@ router.post('/analyze', upload.single('image'), async (req, res) => {
 
     res.json({ ...data, id: measurement._id, savedAt: measurement.created_at });
   } catch (err) {
-    if (err.code === 'ECONNREFUSED') {
-      return res.status(503).json({ error: 'ML service is not running.' });
+    console.error('❌ Analysis Error:', err.message);
+    if (err.code === 'ECONNREFUSED' || err.code === 'ENOTFOUND') {
+      return res.status(503).json({ 
+        error: 'ML service is unreachable. Ensure ML_SERVICE_URL is set correctly in Render environment variables.' 
+      });
+    }
+    if (err.response) {
+      return res.status(err.response.status).json({ 
+        error: `ML service error: ${err.response.data?.error || err.message}` 
+      });
     }
     res.status(500).json({ error: err.message });
   }
